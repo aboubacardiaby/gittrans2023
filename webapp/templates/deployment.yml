@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transapi
+  labels:
+    app: transactionservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: transapi
+  template:
+    metadata:
+      labels:
+        app: transactionservice
+        service: transapi
+    spec:
+      containers:
+        - name: transapi
+          image: adiaby2609/transapi:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transapi
+  labels:
+    app: transactionservice
+    service: transapi
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 80
+      protocol: TCP
+  selector:
+    service: transapi
